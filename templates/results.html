@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ query }} - Результаты поиска</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><a href="/">Web Search</a></h1>
+            <form action="/search" method="get">
+                <div class="search-box">
+                    <input type="text" name="q" value="{{ query }}">
+                    <button type="submit">Поиск</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="results-info">
+            <p>Найдено результатов: {{ total_results }} ({{ "%.2f"|format(search_time) }} секунд)</p>
+        </div>
+        
+        <div class="results">
+            {% for result in results %}
+            <div class="result-item">
+                <h3><a href="{{ result.url }}">{{ result.title|safe }}</a></h3>
+                <cite>{{ result.display_url }}</cite>
+                <p>{{ result.snippet|safe }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if total_results > 10 %}
+        <div class="pagination">
+            {% if current_page > 1 %}
+            <a href="/search?q={{ query }}&page={{ current_page - 1 }}">← Назад</a>
+            {% endif %}
+            
+            <span>Страница {{ current_page }}</span>
+            
+            {% if current_page * 10 < total_results %}
+            <a href="/search?q={{ query }}&page={{ current_page + 1 }}">Вперед →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
